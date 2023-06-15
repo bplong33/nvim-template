@@ -132,9 +132,6 @@ require('lazy').setup({
     },
   },
 
-  -- "gc" to comment visual regions/lines
-  --{ 'numToStr/Comment.nvim', opts = {} },
-
   -- Fuzzy Finder (files, lsp, etc)
   { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
 
@@ -190,12 +187,16 @@ require('lazy').setup({
     build = ':TSUpdate',
   },
   {
+    -- "gc" to comment visual regions/lines
     "numToStr/Comment.nvim",
     dependencies = {
       {
         "JoosepAlviste/nvim-ts-context-commentstring",
       },
     },
+    config = function()
+      require('Comment').setup()
+    end,
     opts = {},
   },
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
@@ -332,9 +333,6 @@ keymap('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S
 -- See `:help NeoTree`
 keymap('n', '<leader>e', require('neo-tree').focus, { desc = 'Focus NeoTree Pane' })
 
-
--- [[ Comment Keymaps ]]
-keymap('n', '<C-/>', require('Comment.api').toggle.linewise.current, { desc = 'Comment select lines' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
