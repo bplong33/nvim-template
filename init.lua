@@ -1,27 +1,7 @@
 --[[
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-Kickstart.nvim is *not* a distribution.
-Kickstart.nvim is a template for your own configuration.
-  The goal is that you can read every line of code, top-to-bottom, understand
-  what your configuration is doing, and modify it to suit your needs.
-  Once you've done that, you should start exploring, configuring and tinkering to
-  explore Neovim!
-  If you don't know anything about Lua, I recommend taking some time to read through
-  a guide. One possible example:
-  - https://learnxinyminutes.com/docs/lua/
-  And then you can explore or search through `:help lua-guide`
-Kickstart Guide:
-I have left several `:help X` comments throughout the init.lua
-You should run that command and read that help section for more information.
-In addition, I have some `NOTE:` items throughout the file.
-These are for you, the reader to help understand what is happening. Feel free to delete
-them once you know what you're doing, but they should serve as a guide for when you
-are first encountering a few different constructs in your nvim config.
-I hope you enjoy your Neovim journey,
-- TJ
-P.S. You can delete this when you're done too. It's your config now :)
+For future learning, use the following references as needed
+- https://learnxinyminutes.com/docs/lua/
+- Explore or search through `:help lua-guide`
 --]]
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -152,9 +132,6 @@ require('lazy').setup({
     },
   },
 
-  -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
-
   -- Fuzzy Finder (files, lsp, etc)
   { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
 
@@ -209,7 +186,19 @@ require('lazy').setup({
     },
     build = ':TSUpdate',
   },
-
+  {
+    -- "gc" to comment visual regions/lines
+    "numToStr/Comment.nvim",
+    dependencies = {
+      {
+        "JoosepAlviste/nvim-ts-context-commentstring",
+      },
+    },
+    config = function()
+      require('Comment').setup()
+    end,
+    opts = {},
+  },
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -278,9 +267,14 @@ keymap('n', '<C-h>', '<C-w>h', { silent = true })
 keymap('n', '<C-j>', '<C-w>j', { silent = true })
 keymap('n', '<C-k>', '<C-w>k', { silent = true })
 keymap('n', '<C-l>', '<C-w>l', { silent = true })
+-- Resize with arrows
+keymap("n", "<C-Up>", ":resize -2<CR>", { silent = true })
+keymap("n", "<C-Down>", ":resize +2<CR>", { silent= true })
+keymap("n", "<C-Left>", ":vertical resize -2<CR>", { silent = true })
+keymap("n", "<C-Right>", ":vertical resize +2<CR>", { silent = true })
 -- Stay in indent mode
-keymap("v", "<", "<gv", opts)
-keymap("v", ">", ">gv", opts)
+keymap("v", "<", "<gv", { silent = true })
+keymap("v", ">", ">gv", { silent = true })
 
 -- Remap for dealing with word wrap
 keymap('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
@@ -338,6 +332,7 @@ keymap('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S
 -- [[ NeoTree Keymaps ]]
 -- See `:help NeoTree`
 keymap('n', '<leader>e', require('neo-tree').focus, { desc = 'Focus NeoTree Pane' })
+
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -440,7 +435,7 @@ local on_attach = function(_, bufnr)
 
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+  nmap('<leader>fs', vim.lsp.buf.signature_help, 'Signature Documentation')
 
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
