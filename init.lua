@@ -108,13 +108,21 @@ require('lazy').setup({
   },
 
   {
+    -- Theme inspired by Sublime
+    'kaiuri/nvim-juliana',
+    lazy = false,
+    opts = {},
+    config = true,
+  },
+
+  {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
     -- See `:help lualine.txt`
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
+        theme = 'juliana',
         component_separators = '|',
         section_separators = '',
       },
@@ -124,16 +132,29 @@ require('lazy').setup({
   {
     -- Add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim',
+    main = 'ibl',
     -- Enable `lukas-reineke/indent-blankline.nvim`
     -- See `:help indent_blankline.txt`
     opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
+      indent = {
+        char = '┊',
+      }
     },
   },
 
   -- Fuzzy Finder (files, lsp, etc)
-  { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
+  { 'nvim-telescope/telescope.nvim',
+
+    branch = '0.1.x',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'BurntSushi/ripgrep',
+      'nvim-telescope/telescope-live-grep-args.nvim',
+    },
+    config = function()
+      require("telescope").load_extension("live_grep_args")
+    end
+  },
 
   -- Fuzzy Finder Algorithm which requires local dependencies to be built.
   -- Only load if `make` is available. Make sure you have the system
@@ -255,6 +276,9 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+-- set default color scheme
+vim.cmd 'colorscheme juliana'
+
 -- [[ Basic Keymaps ]]
 
 -- Keymaps for better default experience
@@ -331,7 +355,7 @@ keymap('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S
 
 -- [[ NeoTree Keymaps ]]
 -- See `:help NeoTree`
-keymap('n', '<leader>e', require('neo-tree').focus, { desc = 'Focus NeoTree Pane' })
+keymap('n', '<leader>e', require('neo-tree').show, { desc = 'Show NeoTree Pane' })
 
 
 -- [[ Configure Treesitter ]]
@@ -495,6 +519,20 @@ mason_lspconfig.setup_handlers {
   end,
 }
 
+-- Set up Ctrl-Copy in Visual mode
+vim.g.clipboard = {
+    name = "WslClipboard",
+    copy = {
+        ["+"] = "clip.exe",
+        ["*"] = "clip.exe",
+    },
+    paste = {
+        ["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+        ["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+    },
+    cache_enabled = true,
+}
+
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
 local cmp = require 'cmp'
@@ -546,4 +584,3 @@ cmp.setup {
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 -- Set Leader
-
